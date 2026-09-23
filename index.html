@@ -1,325 +1,231 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DJ & Entertainment Studio - Live Control</title>
-    <!-- Încărcăm biblioteca MediaPipe pentru segmentarea AI (eliminarea fundalului) -->
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js" crossorigin="anonymous"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        body {
-            background-color: #0f111a;
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-        header {
-            background: linear-gradient(135deg, #1f233a, #0f111a);
-            padding: 15px;
-            text-align: center;
-            border-bottom: 2px solid #ff0055;
-        }
-        header h1 {
-            font-size: 1.5rem;
-            color: #ff0055;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        header p {
-            font-size: 0.85rem;
-            color: #a0a0a0;
-            margin-top: 5px;
-        }
-        .main-container {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            padding: 10px;
-            gap: 15px;
-            max-width: 600px;
-            margin: 0 auto;
-            width: 100%;
-        }
-        .view-panel {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16/9;
-            background: #000;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 8px 25px rgba(255, 0, 85, 0.2);
-            border: 1px solid #333;
-        }
-        canvas {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-        /* Ascundem elementul video nativ, folosim doar canvas-ul randat */
-        #input_video {
-            display: none;
-        }
-        .controls-panel {
-            background: #16192b;
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid #2a2f4c;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .section-title {
-            font-size: 0.95rem;
-            color: #00ffcc;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 5px;
-        }
-        .bg-options {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-        }
-        .btn {
-            background: #252a45;
-            color: white;
-            border: 1px solid #3f4675;
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-            text-align: center;
-        }
-        .btn:active {
-            transform: scale(0.96);
-        }
-        .btn.active {
-            background: #ff0055;
-            border-color: #ff5595;
-            font-weight: bold;
-        }
-        .upload-container {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        .upload-btn-wrapper {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-            width: 100%;
-        }
-        .upload-btn-wrapper input[type=file] {
-            font-size: 100px;
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            cursor: pointer;
-        }
-        .custom-file-btn {
-            background: #2a2f4c;
-            color: #00ffcc;
-            border: 1px dashed #00ffcc;
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-            display: block;
-            font-size: 0.9rem;
-        }
-        .status-bar {
-            text-align: center;
-            font-size: 0.8rem;
-            color: #888;
-            margin-top: auto;
-            padding: 10px;
-        }
-    </style>
+<title>DJ CIOKO LIVE STUDIO</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#050505;
+    color:white;
+    min-height:100vh;
+}
+
+header{
+    text-align:center;
+    padding:20px;
+    background:#111;
+    border-bottom:2px solid #FFD700;
+}
+
+header h1{
+    color:#FFD700;
+    letter-spacing:2px;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:20px;
+}
+
+.preview{
+    position:relative;
+    width:100%;
+    max-width:900px;
+    margin:auto;
+    border-radius:20px;
+    overflow:hidden;
+    border:3px solid #FFD700;
+}
+
+.background{
+    width:100%;
+    height:600px;
+    object-fit:cover;
+    display:block;
+}
+
+video{
+    position:absolute;
+    width:280px;
+    right:20px;
+    bottom:20px;
+    border-radius:15px;
+    border:3px solid white;
+    background:black;
+}
+
+.logo{
+    position:absolute;
+    top:15px;
+    left:15px;
+    background:rgba(0,0,0,.7);
+    padding:10px 20px;
+    border-radius:12px;
+    color:#FFD700;
+    font-weight:bold;
+}
+
+.controls{
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    flex-wrap:wrap;
+    margin-top:25px;
+}
+
+button{
+    background:#FFD700;
+    border:none;
+    padding:12px 20px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+button:hover{
+    opacity:.9;
+}
+
+.scenes{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+    margin-top:30px;
+}
+
+.scene-card{
+    cursor:pointer;
+    background:#111;
+    border-radius:15px;
+    overflow:hidden;
+    border:2px solid transparent;
+    transition:.3s;
+}
+
+.scene-card:hover{
+    border-color:#FFD700;
+}
+
+.scene-card img{
+    width:100%;
+    height:150px;
+    object-fit:cover;
+}
+
+.scene-card h3{
+    text-align:center;
+    padding:10px;
+}
+
+footer{
+    text-align:center;
+    margin-top:30px;
+    padding:20px;
+    color:#999;
+}
+</style>
 </head>
+
 <body>
 
-    <header>
-        <h1>DJ & Entertainment Studio</h1>
-        <p>Live Video & Virtual Background Control</p>
-    </header>
+<header>
+    <h1>DJ CIOKO LIVE STUDIO</h1>
+</header>
 
-    <div class="main-container">
-        <!-- Fereastra Video Live (Canvas) -->
-        <div class="view-panel">
-            <video id="input_video" playsinline></video>
-            <canvas id="output_canvas"></canvas>
+<div class="container">
+
+    <div class="preview">
+
+        <img
+            id="bg"
+            class="background"
+            src="images/festival.jpg"
+            alt="Background">
+
+        <div class="logo">
+            DJ CIOKO
         </div>
 
-        <!-- Panou Control Fundaluri Evenimente -->
-        <div class="controls-panel">
-            <div class="section-title">Alege Vibe-ul Evenimentului</div>
-            <div class="bg-options">
-                <button class="btn active" onclick="setPresetBackground('club')">Studiu / Club Live</button>
-                <button class="btn" onclick="setPresetBackground('wedding')">Nuntă Elegantă</button>
-                <button class="btn" onclick="setPresetBackground('lounge')">Lounge / Party</button>
-                <button class="btn" onclick="setPresetBackground('none')">Fără Fundal (Blur)</button>
-            </div>
+        <video
+            id="camera"
+            autoplay
+            muted
+            playsinline>
+        </video>
 
-            <!-- Opțiune încărcare poză personalizată din telefon -->
-            <div class="upload-container" style="margin-top: 10px;">
-                <div class="section-title">Sau încarcă fundalul tău personalizat</div>
-                <div class="upload-btn-wrapper">
-                    <button class="custom-file-btn">📂 Încarcă poză din telefon</button>
-                    <input type="file" id="customBackgroundInput" accept="image/*" onchange="loadCustomBackground(event)">
-                </div>
-            </div>
-        </div>
     </div>
 
-    <div class="status-bar" id="statusText">Se inițializează camera și sistemul AI...</div>
+    <div class="controls">
+        <button onclick="startCamera()">
+            Pornește Camera
+        </button>
+    </div>
 
-    <script>
-        const videoElement = document.getElementById('input_video');
-        const canvasElement = document.getElementById('output_canvas');
-        const canvasCtx = canvasElement.getContext('2d');
-        const statusText = document.getElementById('statusText');
+    <div class="scenes">
 
-        let currentBackgroundType = 'club'; // implicit
-        let customBackgroundImage = null;
-        
-        // Generăm imagini de fundal programatic pentru preset-uri (fără să depindem de link-uri externe care se pot strica)
-        const presetImages = {};
+        <div class="scene-card" onclick="changeBackground('images/festival.jpg')">
+            <img src="images/festival.jpg">
+            <h3>Festival Stage</h3>
+        </div>
 
-        function generatePresetImages() {
-            // 1. Club / Scenă Live (Tonuri întunecate, lumini neon)
-            const cCanvas = document.createElement('canvas');
-            cCanvas.width = 1280; cCanvas.height = 720;
-            const cCtx = cCanvas.getContext('2d');
-            let grad = cCtx.createLinearGradient(0, 0, 1280, 720);
-            grad.addColorStop(0, '#1a0033'); grad.addColorStop(0.5, '#33001a'); grad.addColorStop(1, '#001a33');
-            cCtx.fillStyle = grad; cCtx.fillRect(0, 0, 1280, 720);
-            // Lumini neon abstracte
-            cCtx.fillStyle = 'rgba(255, 0, 85, 0.3)';
-            cCtx.beginPath(); cCtx.arc(300, 200, 250, 0, Math.PI * 2); cCtx.fill();
-            cCtx.fillStyle = 'rgba(0, 255, 204, 0.3)';
-            cCtx.beginPath(); cCtx.arc(1000, 500, 300, 0, Math.PI * 2); cCtx.fill();
-            cCtx.fillStyle = '#ffffff'; cCtx.font = 'bold 36px sans-serif'; cCtx.fillText('DJ STUDIO LIVE', 50, 670);
-            presetImages['club'] = cCanvas;
+        <div class="scene-card" onclick="changeBackground('images/dj-booth.jpg')">
+            <img src="images/dj-booth.jpg">
+            <h3>DJ Booth</h3>
+        </div>
 
-            // 2. Nuntă Elegantă (Tonuri calde, aurii/bej)
-            const wCanvas = document.createElement('canvas');
-            wCanvas.width = 1280; wCanvas.height = 720;
-            const wCtx = wCanvas.getContext('2d');
-            let wGrad = wCtx.createLinearGradient(0, 0, 1280, 720);
-            wGrad.addColorStop(0, '#2b221e'); wGrad.addColorStop(1, '#14100e');
-            wCtx.fillStyle = wGrad; wCtx.fillRect(0, 0, 1280, 720);
-            wCtx.fillStyle = 'rgba(212, 175, 55, 0.2)'; // textură aurie subtilă
-            wCtx.fillRect(100, 100, 1080, 520);
-            wCtx.fillStyle = '#d4af37'; wCtx.font = 'italic 40px serif'; wCtx.fillText('Wedding & Private Events', 50, 670);
-            presetImages['wedding'] = wCanvas;
+        <div class="scene-card" onclick="changeBackground('images/party.jpg')">
+            <img src="images/party.jpg">
+            <h3>Party Night</h3>
+        </div>
 
-            // 3. Lounge / Party
-            const lCanvas = document.createElement('canvas');
-            lCanvas.width = 1280; lCanvas.height = 720;
-            const lCtx = lCanvas.getContext('2d');
-            lCtx.fillStyle = '#0a192f'; lCtx.fillRect(0, 0, 1280, 720);
-            lCtx.fillStyle = 'rgba(0, 120, 255, 0.25)';
-            lCtx.fillRect(0, 0, 1280, 720);
-            lCtx.fillStyle = '#64ffda'; lCtx.font = 'bold 36px sans-serif'; lCtx.fillText('VIP LOUNGE VIBE', 50, 670);
-            presetImages['lounge'] = lCanvas;
-        }
+    </div>
 
-        generatePresetImages();
+</div>
 
-        function setPresetBackground(type) {
-            currentBackgroundType = type;
-            customBackgroundImage = null;
-            // Actualizăm butoanele active vizual
-            document.querySelectorAll('.controls-panel .btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-            statusText.innerText = `Fundal setat: ${type.toUpperCase()}`;
-        }
+<footer>
+    © DJ CIOKO LIVE STUDIO
+</footer>
 
-        // Încărcare poză custom din memorie telefon
-        function loadCustomBackground(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = new Image();
-                    img.onload = function() {
-                        customBackgroundImage = img;
-                        currentBackgroundType = 'custom';
-                        document.querySelectorAll('.controls-panel .btn').forEach(b => b.classList.remove('active'));
-                        statusText.innerText = "Fundal personalizat încărcat cu succes!";
-                    }
-                    img.src = e.target.result;
-                }
-                reader.readAsDataURL(file);
-            }
-        }
+<script>
 
-        function onResults(results) {
-            canvasCtx.save();
-            canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+const camera = document.getElementById("camera");
 
-            // 1. Desenăm fundalul selectat
-            if (currentBackgroundType === 'custom' && customBackgroundImage) {
-                canvasCtx.drawImage(customBackgroundImage, 0, 0, canvasElement.width, canvasElement.height);
-            } else if (presetImages[currentBackgroundType]) {
-                canvasCtx.drawImage(presetImages[currentBackgroundType], 0, 0, canvasElement.width, canvasElement.height);
-            } else {
-                // Efect de blur / fundal simplu dacă e pe 'none'
-                canvasCtx.fillStyle = '#222';
-                canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height);
-            }
+async function startCamera(){
 
-            // 2. Aplicăm masca AI pentru a tăia persoana (pe tine) din fundalul real
-            canvasCtx.globalCompositeOperation = 'source-in';
-            canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+    try{
 
-            // 3. Revenim la modul normal pentru alte elemente grafice suplimentare dacă este nevoie
-            canvasCtx.globalCompositeOperation = 'destination-over';
-            
-            canvasCtx.restore();
-        }
-
-        const selfieSegmentation = new SelfieSegmentation({
-            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video:true,
+            audio:true
         });
 
-        selfieSegmentation.setOptions({
-            modelSelection: 1, // 1 = general, optimizat pentru performanță bună pe mobil
-            selfieMode: true,
-        });
+        camera.srcObject = stream;
 
-        selfieSegmentation.onResults(onResults);
+    }catch(error){
 
-        const camera = new Camera(videoElement, {
-            onFrame: async () => {
-                canvasElement.width = videoElement.videoWidth || 1280;
-                canvasElement.height = videoElement.videoHeight || 720;
-                await selfieSegmentation.send({ image: videoElement });
-            },
-            width: 1280,
-            height: 720
-        });
+        alert("Nu s-a putut porni camera.");
 
-        camera.start()
-            .then(() => {
-                statusText.innerText = "Studio activ! Camera rulează corect.";
-            })
-            .catch(err => {
-                statusText.innerText = "Erore pornire cameră: Asigură-te că ai permis accesul camerei!";
-                console.error(err);
-            });
-    </script>
+    }
+}
+
+function changeBackground(image){
+
+    document.getElementById("bg").src = image;
+
+}
+
+</script>
+
 </body>
 </html>

@@ -11,7 +11,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:Georgia
 button,input{font-family:inherit}
 .app{max-width:430px;margin:0 auto;min-height:100%;background:linear-gradient(#0b1a24,#071018)}
 .topbar{display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--line)}
-.logo{letter-spacing:.16em;font-size:12px;color:var(--blue2);font-weight:bold}
+.logo{letter-spacing:.16em;font-size:12px;color:var(--blue2)}
 .screen{display:none;padding:8px 10px 78px}
 .screen.active{display:block}
 h1,h2{font-weight:500;color:var(--blue2)}
@@ -75,16 +75,16 @@ video.preview{width:100%;border-radius:12px;background:#000;max-height:360px}
 <div class="app">
 <header class="topbar"><div class="logo">DJCIOKOSTUDIO</div><div class="chip" id="userChip">vizitator</div></header>
 <section id="home" class="screen active">
-  <h1>DJ Studio Live</h1>
-  <p class="muted">Configurație dedicată pentru petreceri private și mixaje live.</p>
+  <h1>Tribuna virtuală</h1>
+  <p class="muted">Pamflet. Nu este Camera Deputaților. Max 3 minute.</p>
   <img class="hero" id="heroSala" alt="Sala"/>
   <button class="btn primary" data-go="seats">300 de locuri</button>
   <button class="btn full" data-go="studio">Prezidiu / filmare</button>
-  <p class="warn">Alege fundalul de petrecere preferat și activează efectele live.</p>
+  <p class="warn">Trage camera pe pupitru. SHOW stânga-sus. 3 scene sub comenzi.</p>
 </section>
 <section id="seats" class="screen">
   <h2>300 de locuri</h2>
-  <p class="muted">Gestionare locuri și invitați la eveniment.</p>
+  <p class="muted">Pe poză: punct roșu = înscris / la rând. Fundal mai luminat.</p>
   <div class="mapwrap"><img id="seatBg" alt="sală"/><canvas id="seatDots"></canvas></div>
   <div class="legend"><span><i class="dot g"></i>liber</span><span><i class="dot r"></i>înscris</span></div>
   <div class="seats" id="seatGrid"></div>
@@ -93,7 +93,7 @@ video.preview{width:100%;border-radius:12px;background:#000;max-height:360px}
     <h2>Rezervi locul <span id="selSeat"></span></h2>
     <div class="field"><label>Nume</label><input id="nume"/></div>
     <div class="field"><label>Oraș</label><input id="oras"/></div>
-    <button class="btn primary" id="btnReserve">Rezervă locul</button>
+    <button class="btn primary" id="btnReserve">Rezervă cu Pălăria</button>
   </div>
 </section>
 <section id="studio" class="screen">
@@ -122,18 +122,18 @@ video.preview{width:100%;border-radius:12px;background:#000;max-height:360px}
     <button class="btn" id="btnLink">Link GIF/PNG</button>
     <button class="btn" id="btnCam">Alege cameră</button>
   </div>
-  <p class="muted" style="margin-top:8px">Scene Fundal Petreceri Private (DJ)</p>
+  <p class="muted" style="margin-top:8px">Schimbă scena fundal</p>
   <div class="scenes" id="scenes"></div>
   <div class="field"><label>Logo pe ecran (gol = fără logo)</label>
     <input id="logoText" maxlength="28" placeholder="DJCIOKOSTUDIO sau numele tău"/>
   </div>
   <input type="file" id="fileMask" accept="image/*" hidden/>
-  <p class="muted" id="cropStatus">Mută = 1 deget. Scale = pinch / rotiță.</p>
+  <p class="muted" id="cropStatus">Mută = 1 deget. Scale = pinch / rotiță. Colț albastru dreapta-jos = freeform.</p>
 </section>
 <section id="preview" class="screen">
   <h2>Înregistrare finalizată</h2>
   <video id="previewVid" class="preview" controls></video>
-  <div class="field"><label>Titlu</label><input id="titlu" placeholder="Mixaj petrecere privată"/></div>
+  <div class="field"><label>Titlu</label><input id="titlu" placeholder="Propunerea ta"/></div>
   <div class="row">
     <button class="btn green full" id="btnPublish">Publică</button>
     <button class="btn full" id="btnDownload">Descarcă</button>
@@ -141,7 +141,7 @@ video.preview{width:100%;border-radius:12px;background:#000;max-height:360px}
   </div>
 </section>
 <section id="feed" class="screen">
-  <h2>Propuneri / Mixuri</h2>
+  <h2>Propuneri</h2>
   <div id="feedList"></div>
 </section>
 <nav class="nav">
@@ -154,31 +154,491 @@ video.preview{width:100%;border-radius:12px;background:#000;max-height:360px}
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js"></script>
 <script>
-// Cele 3 fundaluri profesionale tematice pentru DJ / Petreceri Private generate în baza64
 const SCENES = [
-  {
-    name: "Club Neon & Lasere", 
-    src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='1200' viewBox='0 0 800 1200'><rect width='800' height='1200' fill='%2305020a'/><circle cx='400' cy='300' r='250' fill='%239b00e8' opacity='0.3'/><circle cx='200' cy='600' r='200' fill='%2300f0ff' opacity='0.2'/><path d='M0 1200 L400 400 L800 1200 Z' fill='%23120826'/><path d='M400 400 L200 0 M400 400 L600 0 M400 400 L0 200 M400 400 L800 200' stroke='%23ff0055' stroke-width='3' opacity='0.6'/><text x='400' y='150' font-size='48' fill='%23fff' text-anchor='middle' font-family='sans-serif' font-weight='bold' letter-spacing='4'>DJ PRIVAT</text></svg>"
-  },
-  {
-    name: "Golden VIP Lounge", 
-    src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='1200' viewBox='0 0 800 1200'><rect width='800' height='1200' fill='%230d0a02'/><radialGradient id='g' cx='50%' cy='30%' r='50%'><stop offset='0%' stop-color='%23ffcc00' stop-opacity='0.4'/><stop offset='100%' stop-color='%230d0a02' stop-opacity='1'/></radialGradient><rect width='800' height='1200' fill='url(%23g)'/><path d='M0 0h800v1200H0z' fill='none'/><circle cx='400' cy='250' r='90' fill='none' stroke='%23ffcc00' stroke-width='4' opacity='0.7'/><text x='400' y='265' font-size='32' fill='%23ffcc00' text-anchor='middle' font-family='serif'>VIP PARTY</text></svg>"
-  },
-  {
-    name: "Stage & Disco Ball", 
-    src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='1200' viewBox='0 0 800 1200'><rect width='800' height='1200' fill='%23020813'/><circle cx='400' cy='180' r='70' fill='%23ffffff' opacity='0.8'/><path d='M400 250 L100 1200 M400 250 L700 1200 M400 250 L400 1200' stroke='%2300f0ff' stroke-width='5' opacity='0.5'/><text x='400' y='1100' font-size='40' fill='%2300f0ff' text-anchor='middle' font-family='sans-serif' font-weight='bold'>LIVE MIX</text></svg>"
-  }
+  {name:"Neon Booth", src:"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMjQwIj4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iYmcxIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMxYTBiMmUiLz4KPHN0b3Agb2Zmc2V0PSI2MCUiIHN0b3AtY29sb3I9IiMzZDBmNWMiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMGQwNDE3Ii8+CjwvbGluZWFyR3JhZGllbnQ+CjxyYWRpYWxHcmFkaWVudCBpZD0ic3BvdDEiIGN4PSIzMCUiIGN5PSIyMCUiIHI9IjYwJSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNmZjJmZDAiIHN0b3Atb3BhY2l0eT0iMC41NSIvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmZjJmZDAiIHN0b3Atb3BhY2l0eT0iMCIvPgo8L3JhZGlhbEdyYWRpZW50Pgo8cmFkaWFsR3JhZGllbnQgaWQ9InNwb3QyIiBjeD0iNzUlIiBjeT0iMTUlIiByPSI1NSUiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMmZlM2ZmIiBzdG9wLW9wYWNpdHk9IjAuNSIvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMyZmUzZmYiIHN0b3Atb3BhY2l0eT0iMCIvPgo8L3JhZGlhbEdyYWRpZW50Pgo8L2RlZnM+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMjQwIiBmaWxsPSJ1cmwoI2JnMSkiLz4KPHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIyNDAiIGZpbGw9InVybCgjc3BvdDEpIi8+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMjQwIiBmaWxsPSJ1cmwoI3Nwb3QyKSIvPgo8ZyBzdHJva2U9IiNmZjJmZDAiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC43Ij4KPGxpbmUgeDE9IjAiIHkxPSIzMCIgeDI9IjE1MCIgeTI9IjI0MCIvPgo8bGluZSB4MT0iNjAiIHkxPSIwIiB4Mj0iMjYwIiB5Mj0iMjQwIi8+CjxsaW5lIHgxPSIxODAiIHkxPSIwIiB4Mj0iNDAwIiB5Mj0iMjAwIi8+CjwvZz4KPGcgc3Ryb2tlPSIjMmZlM2ZmIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNSI+CjxsaW5lIHgxPSIyODAiIHkxPSIwIiB4Mj0iNDAwIiB5Mj0iMTIwIi8+CjxsaW5lIHgxPSIwIiB5MT0iMTUwIiB4Mj0iMTIwIiB5Mj0iMjQwIi8+CjwvZz4KPGNpcmNsZSBjeD0iMjAwIiBjeT0iMTYwIiByPSI0NiIgZmlsbD0iIzBkMDQxNyIgc3Ryb2tlPSIjZmZkZDU3IiBzdHJva2Utd2lkdGg9IjQiLz4KPGNpcmNsZSBjeD0iMjAwIiBjeT0iMTYwIiByPSI0NiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZkZDU3IiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1kYXNoYXJyYXk9IjQgNiIvPgo8Y2lyY2xlIGN4PSIyMDAiIGN5PSIxNjAiIHI9IjgiIGZpbGw9IiNmZmRkNTciLz4KPGNpcmNsZSBjeD0iMTMwIiBjeT0iMTUwIiByPSIzMCIgZmlsbD0iIzFhMGIyZSIgc3Ryb2tlPSIjZmYyZmQwIiBzdHJva2Utd2lkdGg9IjMiLz4KPGNpcmNsZSBjeD0iMjcwIiBjeT0iMTUwIiByPSIzMCIgZmlsbD0iIzFhMGIyZSIgc3Ryb2tlPSIjMmZlM2ZmIiBzdHJva2Utd2lkdGg9IjMiLz4KPGcgZmlsbD0iI2ZmZmZmZiI+CjxjaXJjbGUgY3g9IjQwIiBjeT0iNDAiIHI9IjIiLz48Y2lyY2xlIGN4PSI5MCIgY3k9IjIwIiByPSIxLjUiLz48Y2lyY2xlIGN4PSIzMjAiIGN5PSIzNSIgcj0iMiIvPgo8Y2lyY2xlIGN4PSIzNjAiIGN5PSI2MCIgcj0iMS41Ii8+PGNpcmNsZSBjeD0iMjUwIiBjeT0iMTUiIHI9IjEuNSIvPjxjaXJjbGUgY3g9IjE1MCIgY3k9IjMwIiByPSIxLjUiLz4KPC9nPgo8L3N2Zz4="},
+  {name:"Crowd Lights", src:"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMjQwIj4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iYmcyIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMwNTAwMTQiLz4KPHN0b3Agb2Zmc2V0PSI1NSUiIHN0b3AtY29sb3I9IiMxYjAzMzQiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMDAwIi8+CjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0iYmVhbSIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZmZlMTRkIiBzdG9wLW9wYWNpdHk9IjAuNTUiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZmZlMTRkIiBzdG9wLW9wYWNpdHk9IjAiLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI0MCIgZmlsbD0idXJsKCNiZzIpIi8+CjxnIG9wYWNpdHk9IjAuNiI+Cjxwb2x5Z29uIHBvaW50cz0iNjAsMCAxMjAsMCAxODAsMjQwIDAsMjQwIiBmaWxsPSJ1cmwoI2JlYW0pIi8+Cjxwb2x5Z29uIHBvaW50cz0iMjIwLDAgMjgwLDAgMzYwLDI0MCAxNjAsMjQwIiBmaWxsPSJ1cmwoI2JlYW0pIi8+CjwvZz4KPGcgZmlsbD0iIzBkMDQxNyI+Cjxwb2x5Z29uIHBvaW50cz0iMCwyNDAgMjAsMTgwIDM1LDE5NSA1MCwxNzAgNjUsMTkwIDgwLDE3NSA5NSwyMDAgMTEwLDE4MCAxMzAsMjQwIi8+Cjxwb2x5Z29uIHBvaW50cz0iMTMwLDI0MCAxNTAsMTc1IDE2NSwxOTUgMTgwLDE2NSAxOTUsMTkwIDIxMCwxNzAgMjI1LDE5NSAyNDAsMTgwIDI2MCwyNDAiLz4KPHBvbHlnb24gcG9pbnRzPSIyNjAsMjQwIDI4MCwxODUgMjk1LDIwNSAzMTAsMTc1IDMyNSwxOTUgMzQwLDE3OCAzNTUsMjAwIDM3MCwxODUgNDAwLDI0MCIvPgo8L2c+CjxnIGZpbGw9IiNmZjJmZDAiIG9wYWNpdHk9IjAuODUiPgo8Y2lyY2xlIGN4PSI2MCIgY3k9IjIwIiByPSIzIi8+PGNpcmNsZSBjeD0iMTQwIiBjeT0iMTIiIHI9IjMiLz48Y2lyY2xlIGN4PSIyMjAiIGN5PSIyNCIgcj0iMyIvPgo8Y2lyY2xlIGN4PSIzMDAiIGN5PSIxNCIgcj0iMyIvPjxjaXJjbGUgY3g9IjM2MCIgY3k9IjI2IiByPSIzIi8+CjwvZz4KPGcgZmlsbD0iIzJmZTNmZiIgb3BhY2l0eT0iMC44NSI+CjxjaXJjbGUgY3g9IjIwIiBjeT0iNDAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxMDAiIGN5PSI0NSIgcj0iMiIvPjxjaXJjbGUgY3g9IjE4MCIgY3k9IjM4IiByPSIyIi8+CjxjaXJjbGUgY3g9IjI2MCIgY3k9IjQ2IiByPSIyIi8+PGNpcmNsZSBjeD0iMzQwIiBjeT0iNDAiIHI9IjIiLz4KPC9nPgo8L3N2Zz4="},
+  {name:"Mix & Deck", src:"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMjQwIj4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iYmczIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMxMjAyMWYiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMDIwMTBhIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIyNDAiIGZpbGw9InVybCgjYmczKSIvPgo8cmVjdCB4PSIyMCIgeT0iNjAiIHdpZHRoPSIxNzAiIGhlaWdodD0iMTUwIiByeD0iMTAiIGZpbGw9IiMxYTEwMjQiIHN0cm9rZT0iI2ZmMmZkMCIgc3Ryb2tlLXdpZHRoPSIyIi8+CjxjaXJjbGUgY3g9IjEwNSIgY3k9IjEzNSIgcj0iNjIiIGZpbGw9IiMwYTA3MTAiIHN0cm9rZT0iI2ZmZGQ1NyIgc3Ryb2tlLXdpZHRoPSIzIi8+CjxjaXJjbGUgY3g9IjEwNSIgY3k9IjEzNSIgcj0iNjIiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZGQ1NyIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2UtZGFzaGFycmF5PSIzIDUiLz4KPGNpcmNsZSBjeD0iMTA1IiBjeT0iMTM1IiByPSIxMCIgZmlsbD0iI2ZmZGQ1NyIvPgo8cmVjdCB4PSIxNTAiIHk9IjcwIiB3aWR0aD0iOCIgaGVpZ2h0PSIyNiIgZmlsbD0iI2ZmMmZkMCIvPgo8cmVjdCB4PSIyMTAiIHk9IjYwIiB3aWR0aD0iMTcwIiBoZWlnaHQ9IjE1MCIgcng9IjEwIiBmaWxsPSIjMWExMDI0IiBzdHJva2U9IiMyZmUzZmYiIHN0cm9rZS13aWR0aD0iMiIvPgo8ZyBmaWxsPSIjMmZlM2ZmIj4KPHJlY3QgeD0iMjMwIiB5PSI5MCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjkwIi8+CjxyZWN0IHg9IjI1MCIgeT0iNzAiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMTAiLz4KPHJlY3QgeD0iMjcwIiB5PSIxMDAiIHdpZHRoPSIxMCIgaGVpZ2h0PSI4MCIvPgo8cmVjdCB4PSIyOTAiIHk9IjYwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTIwIi8+CjxyZWN0IHg9IjMxMCIgeT0iODUiIHdpZHRoPSIxMCIgaGVpZ2h0PSI5NSIvPgo8cmVjdCB4PSIzMzAiIHk9IjExMCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjcwIi8+CjxyZWN0IHg9IjM1MCIgeT0iNzUiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMDUiLz4KPC9nPgo8cmVjdCB4PSIwIiB5PSIyMTAiIHdpZHRoPSI0MDAiIGhlaWdodD0iMzAiIGZpbGw9IiMwYTA3MTAiLz4KPGNpcmNsZSBjeD0iNjAiIGN5PSIyMjUiIHI9IjYiIGZpbGw9IiNmZjJmZDAiLz4KPGNpcmNsZSBjeD0iOTAiIGN5PSIyMjUiIHI9IjYiIGZpbGw9IiMyZmUzZmYiLz4KPGNpcmNsZSBjeD0iMTIwIiBjeT0iMjI1IiByPSI2IiBmaWxsPSIjZmZkZDU3Ii8+Cjwvc3ZnPg=="}
 ];
+const TOTAL=300, MAX=180;
+const MASKS=["Fără","Anonim","Deputat","Dac","Bufon","Marmură","Upload"];
+const BODIES=["Om","Alien","Dac","Spartan","Rege","Om de paie"];
+const PRIVACY=["Invizibil","Față+mască","Față reală"];
+const seed=[
+  {loc:7,nume:"Andrei Vasilescu",oras:"Iași",gift:"trandafiri",propunere:"Legea drumurilor județene"},
+  {loc:18,nume:"Elena Marin",oras:"București",gift:"gogoasa",propunere:"Taxe pentru tineri"},
+  {loc:102,nume:"Mihai Stan",oras:"Timișoara",gift:"gogoasa",propunere:"Spitale fără cozi"},
+  {loc:201,nume:"Ioana Radu",oras:"Constanța",gift:"palarie",propunere:"Protecția litoralului"},
+  {loc:299,nume:"Gheorghe Popa",oras:"Brașov",gift:"palarie",propunere:"Pădurile din Carpați"}
+];
+const rank={trandafiri:3,gogoasa:2,palarie:1};
+const S={
+  seats:{}, me:JSON.parse(localStorage.getItem("nervo_me")||"null"),
+  clips:JSON.parse(localStorage.getItem("nervo_clips")||"null")||[
+    {titlu:"Legea drumurilor județene",autor:"Andrei Vasilescu",inimi:12,voturi:8,don:3},
+    {titlu:"Taxe pentru tineri",autor:"Elena Marin",inimi:9,voturi:5,don:1}
+  ],
+  mask:0,body:0,privacy:2,mic:true,removeBg:false,aiCrop:false,hideUi:false,
+  overlayImg:null,recording:false,recStart:0,stream:null,recorder:null,chunks:[],blobUrl:null,selected:null,
+  face:{x:.5,y:.42,w:.4,h:.5}, detector:null, scene:0,
+  camPos:{x:.5,y:.58,w:.42,h:.38}, dragging:false,
+  logo: localStorage.getItem("nervo_logo") ?? "DJCIOKOSTUDIO"
+};
+seed.forEach(d=>S.seats[d.loc]=d);
+Object.assign(S.seats, JSON.parse(localStorage.getItem("nervo_seats")||"{}"));
+const $=id=>document.getElementById(id);
+const toast=t=>{const e=$("toast");e.textContent=t;e.style.display="block";setTimeout(()=>e.style.display="none",2200);};
 
-// Salvare automată a setărilor și fișierelor (conform preferințelor tale)
-document.addEventListener('DOMContentLoaded', () => {
-  const savedLogo = localStorage.getItem('dj_logo');
-  if(savedLogo) document.getElementById('logoText').value = savedLogo;
+function go(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  $(id).classList.add("active");
+  document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active", b.dataset.go===id));
+  if(id==="studio") startCam();
+  if(id==="seats"){ renderSeats(); drawSeatMap(); }
+  if(id==="feed") renderFeed();
+}
+document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.go)));
 
-  document.getElementById('logoText').addEventListener('input', (e) => {
-    localStorage.setItem('dj_logo', e.target.value);
-  });
+function save(){
+  localStorage.setItem("nervo_me", JSON.stringify(S.me));
+  localStorage.setItem("nervo_seats", JSON.stringify(Object.fromEntries(Object.entries(S.seats).filter(([k])=>!seed.find(d=>String(d.loc)===String(k))))));
+  localStorage.setItem("nervo_clips", JSON.stringify(S.clips));
+  $("userChip").textContent=S.me?`${S.me.nume} · loc ${S.me.loc}`:"vizitator";
+}
+save();
+$("logoText").value = S.logo;
+$("logoText").addEventListener("input",()=>{
+  S.logo=$("logoText").value;
+  localStorage.setItem("nervo_logo", S.logo);
 });
+
+function setScene(i){
+  S.scene=i;
+  const src=SCENES[i].src;
+  sala.src=src;
+  $("heroSala").src=src;
+  $("seatBg").src=src;
+  document.querySelectorAll("#scenes button").forEach((b,n)=>b.classList.toggle("on",n===i));
+}
+const scenesEl=$("scenes");
+SCENES.forEach((sc,i)=>{
+  const b=document.createElement("button");
+  if(i===0) b.className="on";
+  b.innerHTML=`<img src="${sc.src}" alt="${sc.name}"><div class="scene-lab">${sc.name}</div>`;
+  b.onclick=()=>setScene(i);
+  scenesEl.appendChild(b);
+});
+
+function renderSeats(){
+  const g=$("seatGrid"); g.innerHTML="";
+  for(let i=1;i<=TOTAL;i++){
+    const b=document.createElement("button");
+    b.className="seat"+(S.seats[i]?" ocupat":"");
+    if(S.me&&S.me.loc===i) b.classList.add("me");
+    b.title=S.seats[i]?`#${i} ${S.seats[i].nume}`:`#${i} liber`;
+    b.onclick=()=>selectSeat(i);
+    g.appendChild(b);
+  }
+  const q=Object.values(S.seats).sort((a,b)=>(rank[b.gift]||0)-(rank[a.gift]||0)||a.loc-b.loc);
+  const lab={trandafiri:"🌹",gogoasa:"🍩",palarie:"🎩"};
+  $("queueList").innerHTML=q.map((p,i)=>`<div class="queue-item"><span>${i+1}. ${p.nume} · ${p.oras} · loc ${p.loc}</span><span>${lab[p.gift]||""}</span></div>`).join("");
+}
+function selectSeat(i){
+  if(S.seats[i]){ toast(`Loc ${i}: ${S.seats[i].nume}`); $("reserveBox").style.display="none"; return; }
+  S.selected=i; $("selSeat").textContent=i; $("reserveBox").style.display="block";
+}
+$("btnReserve").onclick=()=>{
+  const nume=$("nume").value.trim(), oras=$("oras").value.trim();
+  if(!nume||!oras) return toast("Nume și oraș");
+  if(S.me) return toast("Ai deja un loc");
+  S.seats[S.selected]={loc:S.selected,nume,oras,gift:"palarie",propunere:""};
+  S.me={loc:S.selected,nume,oras}; save(); renderSeats(); drawSeatMap(); toast("Rezervat"); $("reserveBox").style.display="none";
+};
+document.querySelectorAll(".gift").forEach(g=>g.onclick=()=>{
+  if(!S.me) return toast("Rezervă un loc");
+  S.seats[S.me.loc].gift=g.dataset.gift; save(); toast("Cadou aplicat"); renderSeats();
+});
+
+function seatXY(loc,w,h){
+  const idx=loc-1;
+  const rows=10, cols=30;
+  const r=Math.floor(idx/cols);
+  const c=idx%cols;
+  const t=(c+0.5)/cols;
+  const x=w*(0.12+t*0.76);
+  const y=h*(0.58+r*0.035);
+  return {x,y};
+}
+function drawSeatMap(){
+  const img=$("seatBg"), c=$("seatDots");
+  if(!img.naturalWidth){ img.onload=drawSeatMap; return; }
+  const w=img.clientWidth, h=img.clientHeight;
+  if(!w) return;
+  c.width=w; c.height=h;
+  const ctx=c.getContext("2d");
+  ctx.clearRect(0,0,w,h);
+  Object.values(S.seats).forEach(p=>{
+    const {x,y}=seatXY(p.loc,w,h);
+    ctx.beginPath(); ctx.fillStyle="#e23b2f"; ctx.arc(x,y,7,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle="#fff"; ctx.font="9px Georgia"; ctx.textAlign="center";
+    ctx.fillText(String(p.loc), x, y+3);
+  });
+}
+
+const cam=$("cam"), canvas=$("stage"), ctx=canvas.getContext("2d");
+const sala=new Image();
+setScene(0);
+let raf=0;
+const cutCanvas=document.createElement("canvas");
+const cutCtx=cutCanvas.getContext("2d");
+let personFrame=null;
+
+async function initDetector(){
+  if(S.detector) return S.detector;
+  if(typeof SelfieSegmentation==="undefined") return null;
+  try{
+    S.detector=new SelfieSegmentation({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${f}`});
+    S.detector.setOptions({modelSelection:1});
+    S.detector.onResults(res=>{
+      if(!res.image) return;
+      const w=res.image.width,h=res.image.height;
+      cutCanvas.width=w; cutCanvas.height=h;
+      cutCtx.clearRect(0,0,w,h);
+      cutCtx.drawImage(res.image,0,0,w,h);
+      if(S.removeBg && res.segmentationMask){
+        cutCtx.globalCompositeOperation="destination-in";
+        cutCtx.drawImage(res.segmentationMask,0,0,w,h);
+        cutCtx.globalCompositeOperation="source-over";
+      }
+      personFrame=cutCanvas;
+    });
+    const loop=async()=>{
+      if(cam.readyState>=2 && S.detector) await S.detector.send({image:cam});
+      requestAnimationFrame(loop);
+    };
+    loop();
+    return S.detector;
+  }catch(e){ return null; }
+}
+
+async function startCam(deviceId){
+  if(S.stream){ S.stream.getTracks().forEach(t=>t.stop()); S.stream=null; }
+  const video=deviceId?{deviceId:{exact:deviceId},width:{ideal:1280},height:{ideal:720}}:{facingMode:"user",width:{ideal:1280},height:{ideal:720}};
+  try{
+    S.stream=await navigator.mediaDevices.getUserMedia({video,audio:true});
+    S.stream.getAudioTracks().forEach(t=>t.enabled=S.mic);
+    cam.srcObject=S.stream; await cam.play();
+    await initDetector();
+    draw();
+  }catch{ toast("Permite camera + microfon"); }
+}
+$("btnCam").onclick=async()=>{
+  const cams=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==="videoinput");
+  if(!cams.length) return toast("Nicio cameră");
+  const pick=prompt("Index cameră 0-"+(cams.length-1), "0");
+  const i=+pick; if(Number.isFinite(i)&&cams[i]) startCam(cams[i].deviceId);
+};
+
+function draw(){
+  cancelAnimationFrame(raf);
+  const w=canvas.clientWidth||360, h=canvas.clientHeight||640;
+  if(canvas.width!==w){canvas.width=w;canvas.height=h;}
+  if(sala.complete && sala.naturalWidth){
+    ctx.filter="brightness(1.16)";
+    ctx.drawImage(sala,0,0,w,h);
+    ctx.filter="none";
+  } else { ctx.fillStyle="#10202a"; ctx.fillRect(0,0,w,h); }
+
+  const cw=w*S.camPos.w, ch=h*S.camPos.h;
+  const cx=w*S.camPos.x-cw/2, cy=h*S.camPos.y-ch/2;
+  const src=personFrame||cam;
+  if(personFrame||cam.readyState>=2){
+    ctx.save();
+    ctx.translate(w,0); ctx.scale(-1,1);
+    try{ ctx.drawImage(src, w-cx-cw, cy, cw, ch); }catch(e){}
+    ctx.restore();
+    ctx.strokeStyle="rgba(126,203,255,.45)";
+    ctx.setLineDash([6,4]);
+    ctx.strokeRect(cx,cy,cw,ch);
+    ctx.setLineDash([]);
+    ctx.fillStyle="#7ecbff";
+    ctx.fillRect(cx+cw-12, cy+ch-12, 12, 12);
+  }
+  if(S.mask!==0 && S.mask!==6 && S.privacy!==2){
+    drawMask(cx+cw/2, cy+ch*0.32, cw*0.22);
+  }
+  if(S.overlayImg){
+    const s=cw*0.34;
+    ctx.drawImage(S.overlayImg, cx+cw/2-s/2, cy+8, s, s);
+  }
+  if(S.logo && S.logo.trim()){
+    ctx.font="11px Georgia";
+    const label=S.logo.trim().slice(0,28);
+    const tw=ctx.measureText(label).width;
+    ctx.fillStyle="rgba(0,0,0,.45)"; ctx.fillRect(56,8,tw+16,18);
+    ctx.fillStyle="#b9e4ff"; ctx.fillText(label,64,21);
+  }
+  raf=requestAnimationFrame(draw);
+}
+function drawMask(x,y,r){
+  ctx.save(); ctx.translate(x,y);
+  const k=MASKS[S.mask];
+  if(k==="Anonim"){
+    ctx.fillStyle="#c9a44a"; ctx.beginPath(); ctx.ellipse(0,0,r,r*1.15,0,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle="#1a120a";
+    ctx.beginPath(); ctx.ellipse(-r*.35,-r*.1,r*.16,r*.12,0,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(r*.35,-r*.1,r*.16,r*.12,0,0,Math.PI*2); ctx.fill();
+  } else if(k==="Deputat"){
+    ctx.fillStyle="#e8c9a0"; ctx.beginPath(); ctx.ellipse(0,0,r*.95,r*1.1,0,0,Math.PI*2); ctx.fill();
+  } else if(k==="Dac"){
+    ctx.fillStyle="#8a7350"; ctx.beginPath(); ctx.moveTo(0,-r*1.3); ctx.lineTo(r,r*.4); ctx.lineTo(-r,r*.4); ctx.fill();
+  } else if(k==="Bufon"){
+    ctx.fillStyle="#d4c4a0"; ctx.beginPath(); ctx.ellipse(0,0,r,r*1.05,0,0,Math.PI*2); ctx.fill();
+  } else if(k==="Marmură"){
+    ctx.fillStyle="#e8e4dc"; ctx.beginPath(); ctx.ellipse(0,0,r,r*1.2,0,0,Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+}
+
+const box=$("stageBox");
+function ptr(e){
+  const t=e.touches?e.touches[0]:e;
+  const r=box.getBoundingClientRect();
+  return {x:(t.clientX-r.left)/r.width, y:(t.clientY-r.top)/r.height};
+}
+const pointers=new Map();
+function clampCam(){
+  S.camPos.w=Math.min(.95,Math.max(.12,S.camPos.w));
+  S.camPos.h=Math.min(.95,Math.max(.12,S.camPos.h));
+  S.camPos.x=Math.min(.92,Math.max(.08,S.camPos.x));
+  S.camPos.y=Math.min(.92,Math.max(.08,S.camPos.y));
+}
+function pinchDist(){
+  const a=[...pointers.values()];
+  if(a.length<2) return 0;
+  const dx=a[0].x-a[1].x, dy=a[0].y-a[1].y;
+  return Math.hypot(dx,dy);
+}
+box.addEventListener("pointerdown",e=>{
+  const p=ptr(e);
+  pointers.set(e.pointerId,p);
+  const dx=p.x-S.camPos.x, dy=p.y-S.camPos.y;
+  const onCam=Math.abs(dx)<S.camPos.w/2+0.06 && Math.abs(dy)<S.camPos.h/2+0.06;
+  const nearBR=p.x>S.camPos.x+S.camPos.w/2-0.08 && p.y>S.camPos.y+S.camPos.h/2-0.08;
+  S.resize=onCam && nearBR;
+  S.dragging=onCam && !S.resize && pointers.size===1;
+  S.pinch0=pinchDist();
+  S.pinW=S.camPos.w; S.pinH=S.camPos.h;
+  try{ box.setPointerCapture(e.pointerId); }catch(err){}
+});
+box.addEventListener("pointermove",e=>{
+  if(!pointers.has(e.pointerId)) return;
+  pointers.set(e.pointerId,ptr(e));
+  if(pointers.size>=2 && S.pinch0){
+    const d=pinchDist();
+    const k=d/S.pinch0;
+    S.camPos.w=S.pinW*k; S.camPos.h=S.pinH*k;
+    clampCam(); return;
+  }
+  const p=ptr(e);
+  if(S.resize){
+    S.camPos.w=Math.abs((p.x-S.camPos.x)*2);
+    S.camPos.h=Math.abs((p.y-S.camPos.y)*2);
+    clampCam(); return;
+  }
+  if(!S.dragging) return;
+  S.camPos.x=p.x; S.camPos.y=p.y; clampCam();
+});
+box.addEventListener("pointerup",e=>{ pointers.delete(e.pointerId); S.dragging=false; S.resize=false; });
+box.addEventListener("pointercancel",e=>{ pointers.delete(e.pointerId); S.dragging=false; S.resize=false; });
+box.addEventListener("wheel",e=>{
+  e.preventDefault();
+  const k=e.deltaY<0?1.08:0.92;
+  S.camPos.w*=k; S.camPos.h*=k; clampCam();
+},{passive:false});
+
+$("btnHide").onclick=()=>{
+  S.hideUi=!S.hideUi;
+  $("tools").classList.toggle("hide", S.hideUi);
+  $("giftsBar").classList.toggle("hide", S.hideUi);
+  $("scenes").style.display=S.hideUi?"none":"flex";
+  $("btnHide").textContent=S.hideUi?"SHOW":"HIDE";
+};
+$("btnMic").onclick=()=>{
+  S.mic=!S.mic; if(S.stream) S.stream.getAudioTracks().forEach(t=>t.enabled=S.mic);
+  $("btnMic").textContent=S.mic?"🎙 Mic ON":"🎙 Mic OFF";
+  $("btnMic").classList.toggle("on",S.mic);
+};
+$("btnCrop").onclick=async()=>{
+  S.aiCrop=!S.aiCrop;
+  $("btnCrop").textContent=S.aiCrop?"AI Crop ON":"AI Crop OFF";
+  $("btnCrop").classList.toggle("on",S.aiCrop);
+  if(S.aiCrop) await initDetector();
+};
+$("btnBg").onclick=async()=>{
+  S.removeBg=!S.removeBg;
+  $("btnBg").textContent=S.removeBg?"AI CUT ON":"AI CUT OFF";
+  $("btnBg").classList.toggle("on",S.removeBg);
+  if(S.removeBg){ await initDetector(); toast("AI CUT: te decupează pe scenă"); }
+};
+$("btnMask").onclick=()=>{ S.mask=(S.mask+1)%(MASKS.length-1); $("btnMask").textContent="Masca: "+MASKS[S.mask]; };
+$("btnBody").onclick=()=>{ S.body=(S.body+1)%BODIES.length; $("btnBody").textContent="Corp: "+BODIES[S.body]; };
+$("btnPrivacy").onclick=()=>{ S.privacy=(S.privacy+1)%PRIVACY.length; $("btnPrivacy").textContent="Privacy: "+PRIVACY[S.privacy]; };
+$("btnUpload").onclick=()=>$("fileMask").click();
+$("fileMask").onchange=e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const img=new Image(); img.onload=()=>{S.overlayImg=img; S.mask=6; toast("Masca pe față");}; img.src=URL.createObjectURL(f);
+};
+$("btnAiMask").onclick=()=>{ const p=prompt("Descrie masca"); if(p) toast("Folosește Upload pentru imagine"); };
+$("btnLink").onclick=()=>{
+  const url=prompt("Link GIF/PNG"); if(!url) return;
+  const img=new Image(); img.crossOrigin="anonymous";
+  img.onload=()=>{S.overlayImg=img; S.mask=6;};
+  img.onerror=()=>toast("CORS. Folosește Upload.");
+  img.src=url;
+};
+function applause(){
+  const ac=new (window.AudioContext||window.webkitAudioContext)();
+  for(let i=0;i<18;i++){
+    const o=ac.createOscillator(), g=ac.createGain();
+    o.type="square"; o.frequency.value=400+Math.random()*800; g.gain.value=0.02;
+    o.connect(g); g.connect(ac.destination);
+    const t=ac.currentTime+Math.random()*0.9; o.start(t); o.stop(t+0.08);
+  }
+}
+let tick=null;
+$("recBtn").onclick=async()=>{
+  if(S.recording) return stopRec();
+  if(!S.mic) return toast("Pornește microfonul");
+  if(!S.stream) await startCam();
+  S.hideUi=true; $("tools").classList.add("hide"); $("giftsBar").classList.add("hide"); $("scenes").style.display="none"; $("btnHide").textContent="SHOW";
+  let n=3; $("count").textContent=n;
+  const iv=setInterval(()=>{ n--; $("count").textContent=n>0?n:""; if(n<=0){ clearInterval(iv); beginRec(); } },700);
+};
+function pickMime(){
+  const list=[
+    "video/mp4;codecs=avc1.42E01E,mp4a.40.2",
+    "video/mp4;codecs=avc1.42001E,mp4a.40.2",
+    "video/mp4",
+    "video/webm;codecs=h264,opus",
+    "video/webm;codecs=vp9,opus",
+    "video/webm;codecs=vp8,opus",
+    "video/webm"
+  ];
+  if(window.MediaRecorder && MediaRecorder.isTypeSupported){
+    const hit=list.find(m=>MediaRecorder.isTypeSupported(m));
+    if(hit) return hit;
+  }
+  return "";
+}
+function extOf(mime){
+  if(!mime) return "webm";
+  if(mime.includes("mp4")) return "mp4";
+  return "webm";
+}
+function beginRec(){
+  const stream=canvas.captureStream(25);
+  S.stream.getAudioTracks().forEach(t=>stream.addTrack(t));
+  S.chunks=[];
+  S.recMime=pickMime();
+  S.recExt=extOf(S.recMime);
+  try{
+    S.recorder=S.recMime ? new MediaRecorder(stream,{mimeType:S.recMime}) : new MediaRecorder(stream);
+    S.recMime=S.recorder.mimeType||S.recMime||"video/webm";
+    S.recExt=extOf(S.recMime);
+  }catch{
+    S.recorder=new MediaRecorder(stream);
+    S.recMime=S.recorder.mimeType||"video/webm";
+    S.recExt=extOf(S.recMime);
+  }
+  S.recorder.ondataavailable=e=>{ if(e.data.size) S.chunks.push(e.data); };
+  S.recorder.onstop=()=>{
+    const blob=new Blob(S.chunks,{type:S.recMime||"video/webm"});
+    S.recBlob=blob;
+    if(S.blobUrl) URL.revokeObjectURL(S.blobUrl);
+    S.blobUrl=URL.createObjectURL(blob);
+    $("previewVid").src=S.blobUrl;
+    toast(S.recExt==="mp4" ? "Clip MP4 gata" : "Clip WebM — Chrome nu a dat MP4 pe acest telefon");
+    go("preview");
+  };
+  S.recorder.start(200); S.recording=true; S.recStart=Date.now();
+  $("recBtn").classList.add("rec");
+  tick=setInterval(()=>{
+    const s=Math.min(MAX, Math.floor((Date.now()-S.recStart)/1000));
+    $("recTimer").textContent=`${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")} / 03:00`;
+    if(s>=MAX) stopRec();
+  },200);
+}
+function stopRec(){
+  if(!S.recording) return;
+  S.recording=false; $("recBtn").classList.remove("rec"); clearInterval(tick);
+  S.recorder.stop(); applause(); toast("Aplauze");
+}
+function downloadBlob(blob, name){
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=name;
+  a.click();
+}
+$("btnDownload").onclick=async()=>{
+  if(!S.blobUrl && !S.recBlob) return toast("Nu există clip");
+  const blob=S.recBlob || await fetch(S.blobUrl).then(r=>r.blob());
+  const base=($("titlu").value.trim()||"nervobitii").replace(/[^a-zA-Z0-9_-ăâîșțĂÂÎȘȚ ]/g,"").slice(0,40);
+  if((S.recExt==="mp4") || (blob.type||"").includes("mp4")){
+    downloadBlob(blob, base+".mp4");
+    toast("Descărcat MP4");
+    return;
+  }
+  toast("Convertesc în MP4… așteaptă");
+  try{
+    const { FFmpeg } = await import("https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js");
+    const { fetchFile, toBlobURL } = await import("https://unpkg.com/@ffmpeg/util@0.12.1/dist/esm/index.js");
+    const ffmpeg = new FFmpeg();
+    const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm";
+    await ffmpeg.load({
+      coreURL: await toBlobURL(baseURL+"/ffmpeg-core.js","text/javascript"),
+      wasmURL: await toBlobURL(baseURL+"/ffmpeg-core.wasm","application/wasm")
+    });
+    const inName = (S.recExt==="mp4") ? "in.mp4" : "in.webm";
+    await ffmpeg.writeFile(inName, await fetchFile(blob));
+    await ffmpeg.exec(["-i", inName, "-c:v","libx264","-preset","ultrafast","-c:a","aac","-movflags","+faststart","out.mp4"]);
+    const data = await ffmpeg.readFile("out.mp4");
+    const mp4 = new Blob([data.buffer], {type:"video/mp4"});
+    S.recBlob=mp4; S.recExt="mp4";
+    if(S.blobUrl) URL.revokeObjectURL(S.blobUrl);
+    S.blobUrl=URL.createObjectURL(mp4);
+    $("previewVid").src=S.blobUrl;
+    downloadBlob(mp4, base+".mp4");
+    toast("Descărcat MP4");
+  }catch(err){
+    console.log(err);
+    downloadBlob(blob, base+".mp4");
+    toast("Browserul a salvat fișierul ca MP4/WebM. Deschide-l în galerie.");
+  }
+};
+$("btnDelete").onclick=()=>{ S.blobUrl=null; $("previewVid").src=""; go("studio"); };
+$("btnPublish").onclick=()=>{
+  S.clips.unshift({titlu:$("titlu").value.trim()||"Fără titlu", autor:S.me?S.me.nume:"Anonim", url:S.blobUrl, inimi:0,voturi:0,don:0});
+  save(); renderFeed(); go("feed");
+};
+function renderFeed(){
+  $("feedList").innerHTML=S.clips.map((c,i)=>`
+    <div class="card"><strong>${c.titlu}</strong><div class="muted">${c.autor}</div>
+    ${c.url?`<video src="${c.url}" controls style="width:100%;margin-top:8px;border-radius:8px"></video>`:""}
+    <div class="actions">
+      <button data-a="heart" data-i="${i}">❤ ${c.inimi}</button>
+      <button data-a="vote" data-i="${i}">Vot ${c.voturi}</button>
+      <button data-a="don" data-i="${i}">🍩 ${c.don}</button>
+    </div></div>`).join("");
+  $("feedList").onclick=e=>{
+    const b=e.target.closest("button"); if(!b||b.dataset.i==null) return;
+    const i=+b.dataset.i;
+    if(b.dataset.a==="heart") S.clips[i].inimi++;
+    if(b.dataset.a==="vote") S.clips[i].voturi++;
+    if(b.dataset.a==="don") S.clips[i].don++;
+    save(); renderFeed();
+  };
+}
+renderSeats(); renderFeed();
 </script>
 </body>
 </html>
